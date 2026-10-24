@@ -41,7 +41,7 @@ Two schedules matter. The first is the industry rule. The second is what your CA
 
 The limits apply by issuance date. A certificate issued the day before a cutoff keeps its full lifetime.
 
-**Let's Encrypt.** Most custom-domain setups use Let's Encrypt, which already issues 90-day certificates. Its published plan ([Decreasing Certificate Lifetimes to 45 Days](https://letsencrypt.org/2025/12/02/from-90-to-45), [64-Day Certificate Lifetimes Coming Feb 2027](https://letsencrypt.org/2026/10/07/64-day-certs.html)):
+**Let's Encrypt.** Let's Encrypt is a common choice for customer custom domains, and its default certificates already last 90 days. Its published plan ([Decreasing Certificate Lifetimes to 45 Days](https://letsencrypt.org/2025/12/02/from-90-to-45), [64-Day Certificate Lifetimes Coming Feb 2027](https://letsencrypt.org/2026/10/07/64-day-certs.html)):
 
 | Date | Change |
 |---|---|
@@ -57,14 +57,14 @@ Let's Encrypt expects the last 90-day certificate to expire on 11 May 2027. If y
 Ten certificates for your own sites can survive manual renewal. A certificate for every customer domain can't, for three reasons.
 
 1. **Volume multiplies.** Here's the arithmetic for 10,000 customer domains. Renewing 90-day certificates 30 days before expiry is one renewal every 60 days per domain, about 167 a day. Renewing 45-day certificates at two-thirds of their lifetime is one every 30 days, about 333 a day. Renewing them 30 days before expiry is one every 15 days, about 667 a day.
-2. **You don't control the DNS.** Every renewal now needs a fresh validation, because the reuse window is shrinking to 10 days (and to 7 hours at Let's Encrypt). If the customer has moved DNS providers or deleted your record since the last renewal, it fails. With a 398-day certificate you might have found out next year. With a 45-day certificate you find out this month.
+2. **You don't control the DNS.** Let's Encrypt reuses a past domain validation for 30 days today, 10 days from 10 February 2027 and 7 hours from 16 February 2028, and the Baseline Requirements cap reuse at 10 days from 15 March 2029. Once the reuse period is shorter than the gap between renewals, every renewal needs a fresh validation. If the customer has moved DNS providers or deleted your record since the last renewal, it fails. With a 398-day certificate you might have found out next year. With a 45-day certificate you find out this month.
 3. **Failures are quiet.** An expired certificate on `careers.acme.com` doesn't page anyone on your team. Your customer's visitors see a browser warning, and your customer finds out from them.
 
 The work is in timing, monitoring, preflight checks and talking to customers. For the full picture of how customer domains fit together, start with the [complete guide to custom domains for SaaS](/blog/custom-domains-for-saas).
 
 ## 1. Renew on a schedule that scales with the lifetime
 
-The most common bug Let's Encrypt calls out is a renewal hard-coded to a number of days: "renew at day 60", or a cron job with `80` in it. Their advice is to grep cron jobs, wrapper scripts and runbooks for numbers like 83, 80 or 60, then renew at about two-thirds of the lifetime instead.
+Let's Encrypt specifically warns about renewals hard-coded to a fixed number of days: "renew at day 60", or a cron job with `80` in it. Their advice is to grep cron jobs, wrapper scripts and runbooks for numbers like 83, 80 or 60, then renew at about two-thirds of the lifetime instead.
 
 Better still, ask the CA. **ARI** ([RFC 9773](https://www.rfc-editor.org/rfc/rfc9773)) lets the CA publish a suggested renewal window for each certificate. Your client fetches it, picks a uniform random time inside the window, and renews then. The CA can move the window earlier, for example before a mass revocation, and your fleet follows without a deploy. When you place the renewal order, include the `replaces` field with the old certificate's ID so the CA can link the two.
 
@@ -151,7 +151,7 @@ This is where shorter lifetimes hurt most: with 47-day certificates, a DNS chang
 
 ## How Apexly handles renewals
 
-If you'd rather not run this yourself, [Apexly](https://apexly.dev) is a custom-domains API for B2B SaaS. It issues Let's Encrypt certificates automatically and renews them automatically, 30 days before expiry. It checks customer DNS from 3 resolvers. Signed webhooks (9 events, 7 retries) tell your app when a domain's state changes, so you can tell your customer. Setup is one API call per domain. The details are in the [docs](https://docs.apexly.dev).
+If you'd rather not run this yourself, [Apexly](https://apexly.dev) is a custom-domains API for B2B SaaS. It issues Let's Encrypt certificates automatically and renews them automatically, 30 days before expiry. It checks customer DNS from 3 resolvers. It sends signed webhooks (9 events, 7 retries). Setup is one API call per domain. The details are in the [docs](https://docs.apexly.dev).
 
 ## FAQ
 
