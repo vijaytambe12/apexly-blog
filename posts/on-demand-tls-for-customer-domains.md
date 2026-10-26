@@ -125,7 +125,7 @@ Let's Encrypt certificates last 90 days today. Under CA/Browser Forum ballot SC-
 
 ## Or skip running it
 
-If running TLS for strangers' domains isn't your product, a custom-domains API runs it for you. Apexly does on-demand issuance gated by DNS verification from three resolvers, Let's Encrypt certificates spread across three ACME accounts, CAA checks with exact fix messages, shared encrypted storage, and renewals that start 30 days early. Your origin receives the request with the original `Host` header and a signature. [Quickstart](https://docs.apexly.dev/quickstart).
+If running TLS for strangers' domains isn't your product, a custom-domains API runs it for you. Apexly does on-demand issuance gated by DNS verification from three resolvers, Let's Encrypt certificates spread across three ACME accounts, CAA checks with exact fix messages, shared S3 storage with server-side AES-256 encryption, and renewals that start 30 days early. Your origin receives the request with the original `Host` header and a signature. [Quickstart](https://docs.apexly.dev/quickstart).
 
 ## FAQ
 
