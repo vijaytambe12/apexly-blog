@@ -3,7 +3,7 @@ title: "On-demand TLS for customer domains: Caddy, certmagic and Let's Encrypt l
 slug: on-demand-tls-for-customer-domains
 description: "How to issue SSL certificates for thousands of customer domains automatically: on-demand TLS with Caddy and certmagic, the ask endpoint, shared storage and locking, Let's Encrypt rate limits, CAA records, renewals and the 47-day certificate future."
 date: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-26
 author: Vijay Tambe
 authorRole: Founder, Apexly
 keywords: [on demand tls, caddy on_demand_tls ask, certmagic custom domains, ssl for customer domains, let's encrypt rate limits saas, automatic https custom domains, saas ssl certificates]
@@ -95,7 +95,7 @@ On S3 you can build locks with **conditional writes** (`If-None-Match: *`): crea
 | Consecutive failures per hostname | pauses issuance for that name, up to 10 days | Stop retrying names that never validate |
 | ARI renewals | **exempt from all limits** | Use an ACME client with ARI support |
 
-Source: [letsencrypt.org/docs/rate-limits](https://letsencrypt.org/docs/rate-limits/) (updated 5 August 2026). Configure **ZeroSSL or a second CA** as fallback so an outage or rate limit at one CA doesn't block new domains.
+Source: [letsencrypt.org/docs/rate-limits](https://letsencrypt.org/docs/rate-limits/) (updated 5 August 2026). If you build this yourself, configure **ZeroSSL or a second CA** as fallback so an outage or rate limit at one CA doesn't block new domains.
 
 ## Check CAA before ordering
 
@@ -112,7 +112,7 @@ A CAA record such as `acme.com. CAA 0 issue "digicert.com"` means only DigiCert 
 | Validation timeout | Port 80 blocked, or traffic not reaching you yet | Open port 80 (HTTP-01) or switch to TLS-ALPN-01 |
 | `unauthorized` from CA | An old AAAA record points elsewhere, so the CA checked over IPv6 | Delete the stale AAAA record |
 | CAA error | CAA doesn't list your CA | Add `0 issue "letsencrypt.org"` |
-| `rateLimited` | Repeated failures or a bulk import | Wait, back off, use ARI and a fallback CA |
+| `rateLimited` | Repeated failures or a bulk import | Wait, back off, use ARI and (if you run your own stack) a fallback CA |
 | Works for some visitors only | Old A records still present next to yours | Remove the extra A records |
 
 ## Renewals in a world of 47-day certificates
